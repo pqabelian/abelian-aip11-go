@@ -94,11 +94,18 @@ func MnemonicToEntropySeed(mnemonic []string, wordlist []string) []byte {
 
 // EntropySeedToMasterSeed derives the master seed from the entropy seed.
 func EntropySeedToMasterSeed(entropySeed []byte, customizationContext []byte) []byte {
+	if len(entropySeed) != 32 {
+		panic("entropy seed must be 32 bytes")
+	}
 	return PRF(entropySeed, append([]byte("AccountMasterSeed"), customizationContext...))
 }
 
 // MasterSeedToAccountRootSeeds derives the account root seeds from the master seed.
 func MasterSeedToAccountRootSeeds(masterSeed []byte) [][]byte {
+	if len(masterSeed) != 64 {
+		panic("master seed must be 64 bytes")
+	}
+
 	coinSpKeyRootSeed := PRF(masterSeed, []byte("CoinSpendKeyRootSeed"))
 	coinSnKeyRootSeed := PRF(masterSeed, []byte("CoinSerialNumberKeyRootSeed"))
 	coinDetectorRootKey := PRF(masterSeed, []byte("CoinDetectorRootKey"))
@@ -114,11 +121,17 @@ func MasterSeedToAccountRootSeeds(masterSeed []byte) [][]byte {
 
 // MasterSeedToAccountPublicRandRootSeed derives the public rand root seed from the master seed.
 func MasterSeedToAccountPublicRandRootSeed(masterSeed []byte) []byte {
+	if len(masterSeed) != 64 {
+		panic("master seed must be 64 bytes")
+	}
 	return PRF(masterSeed, []byte("PublicRandRootSeed"))
 }
 
 // DerivePublicRand derives the public rand from the public rand root seed.
 func DerivePublicRand(publicRandRootSeed []byte, index uint32) []byte {
+	if len(publicRandRootSeed) != 64 {
+		panic("public rand root seed must be 64 bytes")
+	}
 	seqNo := EncodeSeqNo(index)
 	return PRF(publicRandRootSeed, []byte(seqNo))
 }
