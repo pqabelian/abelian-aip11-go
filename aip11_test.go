@@ -32,7 +32,7 @@ func ExampleEntropySeedToMnemonic() {
 }
 
 func TestEntropySeedToMnemonic(t *testing.T) {
-	vectors := getBIP11Vector()
+	vectors := getAIP11Vector()
 	for i, v := range vectors {
 		t.Run(fmt.Sprintf("vector %d", i), func(t *testing.T) {
 			entropySeed, err := hex.DecodeString(v.entropySeed)
@@ -52,7 +52,7 @@ func ExampleMnemonicToEntropySeed() {
 }
 
 func TestMnemonicToEntropySeed(t *testing.T) {
-	vectors := getBIP11Vector()
+	vectors := getAIP11Vector()
 	for i, v := range vectors {
 		t.Run(fmt.Sprintf("vector %d", i), func(t *testing.T) {
 			entropySeed, err := hex.DecodeString(v.entropySeed)
@@ -71,7 +71,7 @@ func ExampleEntropySeedToMasterSeed() {
 }
 
 func TestEntropySeedToMasterSeed(t *testing.T) {
-	vectors := getBIP11Vector()
+	vectors := getAIP11Vector()
 	for i, v := range vectors {
 		t.Run(fmt.Sprintf("vector %d", i), func(t *testing.T) {
 			entropySeed, err := hex.DecodeString(v.entropySeed)
@@ -98,7 +98,7 @@ func ExampleMasterSeedToAccountRootSeeds() {
 }
 
 func TestMasterSeedToAccountRootSeeds(t *testing.T) {
-	vectors := getBIP11Vector()
+	vectors := getAIP11Vector()
 	for i, v := range vectors {
 		t.Run(fmt.Sprintf("vector %d", i), func(t *testing.T) {
 			entropySeed, err := hex.DecodeString(v.entropySeed)
@@ -122,7 +122,7 @@ func ExampleMasterSeedToAccountPublicRandRootSeed() {
 }
 
 func TestMasterSeedToAccountPublicRandRootSeed(t *testing.T) {
-	vectors := getBIP11Vector()
+	vectors := getAIP11Vector()
 	for i, v := range vectors {
 		t.Run(fmt.Sprintf("vector %d", i), func(t *testing.T) {
 			entropySeed, err := hex.DecodeString(v.entropySeed)
@@ -151,7 +151,7 @@ func ExampleDerivePublicRand() {
 }
 
 func TestDerivePublicRand(t *testing.T) {
-	vectors := getBIP11Vector()
+	vectors := getAIP11Vector()
 	for i, v := range vectors {
 		t.Run(fmt.Sprintf("vector %d", i), func(t *testing.T) {
 			entropySeed, err := hex.DecodeString(v.entropySeed)
@@ -177,7 +177,7 @@ type publicRand struct {
 	expected string
 }
 
-type bip11Vector struct {
+type aip11Vector struct {
 	entropySeed        string
 	mnemonic           string
 	masterSeed         string
@@ -186,8 +186,8 @@ type bip11Vector struct {
 	publicRands        []publicRand
 }
 
-func getBIP11Vector() []bip11Vector {
-	return []bip11Vector{
+func getAIP11Vector() []aip11Vector {
+	return []aip11Vector{
 		{
 			entropySeed: "0182bd0265054bb872a69678465fd218116901e6da9c6dbd722f65fb7bc18fdc",
 			mnemonic:    "account bicycle dog skate feed switch skin spot joke cream virus coral bird liberty opinion fatal horror twist mesh slogan response this disorder miracle",
