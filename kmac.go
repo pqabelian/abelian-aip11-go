@@ -136,7 +136,7 @@ func bytepad(input []byte, w int) []byte {
 	buf := make([]byte, 0, 9+len(input)+w)
 	buf = append(buf, leftEncode(uint64(w))...)
 	buf = append(buf, input...)
-	padlen := w - (len(buf) % w)
+	padlen := (len(buf)+w-1)/w*w - len(buf)
 	return append(buf, make([]byte, padlen)...)
 }
 
