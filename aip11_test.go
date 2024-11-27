@@ -14,19 +14,20 @@ import (
 // Main functions Examples and Tests
 
 func ExampleSampleEntropySeed() {
-	entropySeed := aip11.SampleEntropySeed()
+	entropySeed, _ := aip11.SampleEntropySeed()
 	fmt.Println(len(entropySeed))
 	// Output: 32
 }
 
 func TestSampleEntropySeed(t *testing.T) {
-	entropySeed := aip11.SampleEntropySeed()
+	entropySeed, err := aip11.SampleEntropySeed()
+	assert.NoError(t, err, "Entropy seed should be sampled correctly")
 	assert.Equal(t, 32, len(entropySeed), "Entropy seed length should be 32")
 }
 
 func ExampleEntropySeedToMnemonic() {
-	entropySeed := aip11.SampleEntropySeed()
-	mnemonic := aip11.EntropySeedToMnemonic(entropySeed, wordlists.English)
+	entropySeed, _ := aip11.SampleEntropySeed()
+	mnemonic, _ := aip11.EntropySeedToMnemonic(entropySeed, wordlists.English)
 	fmt.Println(len(mnemonic))
 	// Output: 24
 }
@@ -37,16 +38,17 @@ func TestEntropySeedToMnemonic(t *testing.T) {
 		t.Run(fmt.Sprintf("vector %d", i), func(t *testing.T) {
 			entropySeed, err := hex.DecodeString(v.entropySeed)
 			assert.NoError(t, err, "Entropy seed should be decoded correctly")
-			mnemonic := aip11.EntropySeedToMnemonic(entropySeed, wordlists.English)
+			mnemonic, err := aip11.EntropySeedToMnemonic(entropySeed, wordlists.English)
+			assert.NoError(t, err, "Mnemonic should be generated correctly")
 			assert.Equal(t, v.mnemonic, strings.Join(mnemonic, " "), "Mnemonic should be the same")
 		})
 	}
 }
 
 func ExampleMnemonicToEntropySeed() {
-	entropySeed := aip11.SampleEntropySeed()
-	mnemonic := aip11.EntropySeedToMnemonic(entropySeed, wordlists.English)
-	entropySeed2 := aip11.MnemonicToEntropySeed(mnemonic, wordlists.English)
+	entropySeed, _ := aip11.SampleEntropySeed()
+	mnemonic, _ := aip11.EntropySeedToMnemonic(entropySeed, wordlists.English)
+	entropySeed2, _ := aip11.MnemonicToEntropySeed(mnemonic, wordlists.English)
 	fmt.Println(len(entropySeed2))
 	// Output: 32
 }
@@ -57,15 +59,16 @@ func TestMnemonicToEntropySeed(t *testing.T) {
 		t.Run(fmt.Sprintf("vector %d", i), func(t *testing.T) {
 			entropySeed, err := hex.DecodeString(v.entropySeed)
 			assert.NoError(t, err, "Entropy seed should be decoded correctly")
-			entropySeed2 := aip11.MnemonicToEntropySeed([]string(strings.Split(v.mnemonic, " ")), wordlists.English)
+			entropySeed2, err := aip11.MnemonicToEntropySeed([]string(strings.Split(v.mnemonic, " ")), wordlists.English)
+			assert.NoError(t, err, "Entropy seed should be decoded correctly")
 			assert.Equal(t, entropySeed, entropySeed2, "Entropy seed should be the same")
 		})
 	}
 }
 
 func ExampleEntropySeedToMasterSeed() {
-	entropySeed := aip11.SampleEntropySeed()
-	masterSeed := aip11.EntropySeedToMasterSeed(entropySeed, []byte{})
+	entropySeed, _ := aip11.SampleEntropySeed()
+	masterSeed, _ := aip11.EntropySeedToMasterSeed(entropySeed, []byte{})
 	fmt.Println(len(masterSeed))
 	// Output: 64
 }
@@ -76,16 +79,17 @@ func TestEntropySeedToMasterSeed(t *testing.T) {
 		t.Run(fmt.Sprintf("vector %d", i), func(t *testing.T) {
 			entropySeed, err := hex.DecodeString(v.entropySeed)
 			assert.NoError(t, err, "Entropy seed should be decoded correctly")
-			masterSeed2 := aip11.EntropySeedToMasterSeed(entropySeed, []byte{})
-			assert.Equal(t, v.masterSeed, hex.EncodeToString(masterSeed2), "Master seed should be the same")
+			masterSeed, err := aip11.EntropySeedToMasterSeed(entropySeed, []byte{})
+			assert.NoError(t, err, "Master seed should be generated correctly")
+			assert.Equal(t, v.masterSeed, hex.EncodeToString(masterSeed), "Master seed should be the same")
 		})
 	}
 }
 
 func ExampleMasterSeedToAccountRootSeeds() {
-	entropySeed := aip11.SampleEntropySeed()
-	masterSeed := aip11.EntropySeedToMasterSeed(entropySeed, []byte{})
-	accountRootSeeds := aip11.MasterSeedToAccountRootSeeds(masterSeed)
+	entropySeed, _ := aip11.SampleEntropySeed()
+	masterSeed, _ := aip11.EntropySeedToMasterSeed(entropySeed, []byte{})
+	accountRootSeeds, _ := aip11.MasterSeedToAccountRootSeeds(masterSeed)
 	fmt.Println(len(accountRootSeeds))
 	for _, seed := range accountRootSeeds {
 		fmt.Println(len(seed))
@@ -103,8 +107,10 @@ func TestMasterSeedToAccountRootSeeds(t *testing.T) {
 		t.Run(fmt.Sprintf("vector %d", i), func(t *testing.T) {
 			entropySeed, err := hex.DecodeString(v.entropySeed)
 			assert.NoError(t, err, "Entropy seed should be decoded correctly")
-			masterSeed := aip11.EntropySeedToMasterSeed(entropySeed, []byte{})
-			accountRootSeeds := aip11.MasterSeedToAccountRootSeeds(masterSeed)
+			masterSeed, err := aip11.EntropySeedToMasterSeed(entropySeed, []byte{})
+			assert.NoError(t, err, "Master seed should be generated correctly")
+			accountRootSeeds, err := aip11.MasterSeedToAccountRootSeeds(masterSeed)
+			assert.NoError(t, err, "Account root seeds should be generated correctly")
 			assert.Equal(t, v.rootSeeds.coinSpKeyRootSeed, hex.EncodeToString(accountRootSeeds[0]), "Coin SP key root seed should be the same")
 			assert.Equal(t, v.rootSeeds.coinSnKeyRootSeed, hex.EncodeToString(accountRootSeeds[1]), "Coin SN key root seed should be the same")
 			assert.Equal(t, v.rootSeeds.coinDetectorRootKey, hex.EncodeToString(accountRootSeeds[2]), "Coin detector root key should be the same")
@@ -114,9 +120,9 @@ func TestMasterSeedToAccountRootSeeds(t *testing.T) {
 }
 
 func ExampleMasterSeedToAccountPublicRandRootSeed() {
-	entropySeed := aip11.SampleEntropySeed()
-	masterSeed := aip11.EntropySeedToMasterSeed(entropySeed, []byte{})
-	publicRandRootSeed := aip11.MasterSeedToAccountPublicRandRootSeed(masterSeed)
+	entropySeed, _ := aip11.SampleEntropySeed()
+	masterSeed, _ := aip11.EntropySeedToMasterSeed(entropySeed, []byte{})
+	publicRandRootSeed, _ := aip11.MasterSeedToAccountPublicRandRootSeed(masterSeed)
 	fmt.Println(len(publicRandRootSeed))
 	// Output: 64
 }
@@ -127,20 +133,22 @@ func TestMasterSeedToAccountPublicRandRootSeed(t *testing.T) {
 		t.Run(fmt.Sprintf("vector %d", i), func(t *testing.T) {
 			entropySeed, err := hex.DecodeString(v.entropySeed)
 			assert.NoError(t, err, "Entropy seed should be decoded correctly")
-			masterSeed := aip11.EntropySeedToMasterSeed(entropySeed, []byte{})
-			publicRandRootSeed := aip11.MasterSeedToAccountPublicRandRootSeed(masterSeed)
+			masterSeed, err := aip11.EntropySeedToMasterSeed(entropySeed, []byte{})
+			assert.NoError(t, err, "Master seed should be generated correctly")
+			publicRandRootSeed, err := aip11.MasterSeedToAccountPublicRandRootSeed(masterSeed)
+			assert.NoError(t, err, "Public rand root seed should be generated correctly")
 			assert.Equal(t, v.publicRandRootSeed, hex.EncodeToString(publicRandRootSeed), "Public rand root seed should be the same")
 		})
 	}
 }
 
 func ExampleDerivePublicRand() {
-	entropySeed := aip11.SampleEntropySeed()
-	masterSeed := aip11.EntropySeedToMasterSeed(entropySeed, []byte{})
-	publicRandRootSeed := aip11.MasterSeedToAccountPublicRandRootSeed(masterSeed)
+	entropySeed, _ := aip11.SampleEntropySeed()
+	masterSeed, _ := aip11.EntropySeedToMasterSeed(entropySeed, []byte{})
+	publicRandRootSeed, _ := aip11.MasterSeedToAccountPublicRandRootSeed(masterSeed)
 
 	for i := 1; i <= 5; i++ {
-		publicRand := aip11.DerivePublicRand(publicRandRootSeed, uint32(i))
+		publicRand, _ := aip11.DerivePublicRand(publicRandRootSeed, uint32(i))
 		fmt.Println(len(publicRand))
 	}
 	// Output: 64
@@ -156,10 +164,14 @@ func TestDerivePublicRand(t *testing.T) {
 		t.Run(fmt.Sprintf("vector %d", i), func(t *testing.T) {
 			entropySeed, err := hex.DecodeString(v.entropySeed)
 			assert.NoError(t, err, "Entropy seed should be decoded correctly")
-			masterSeed := aip11.EntropySeedToMasterSeed(entropySeed, []byte{})
-			publicRandRootSeed := aip11.MasterSeedToAccountPublicRandRootSeed(masterSeed)
+			masterSeed, err := aip11.EntropySeedToMasterSeed(entropySeed, []byte{})
+			assert.NoError(t, err, "Master seed should be generated correctly")
+			publicRandRootSeed, err := aip11.MasterSeedToAccountPublicRandRootSeed(masterSeed)
+			assert.NoError(t, err, "Public rand root seed should be generated correctly")
 			for _, publicRand := range v.publicRands {
-				assert.Equal(t, publicRand.expected, hex.EncodeToString(aip11.DerivePublicRand(publicRandRootSeed, publicRand.seqNo)), "Public rand should be the same")
+				publicRandResult, err := aip11.DerivePublicRand(publicRandRootSeed, publicRand.seqNo)
+				assert.NoError(t, err, "Public rand should be generated correctly")
+				assert.Equal(t, publicRand.expected, hex.EncodeToString(publicRandResult), "Public rand should be the same")
 			}
 		})
 	}
@@ -382,10 +394,12 @@ func TestBitsToBytes(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			result, err := aip11.BitsToBytes(tc.bits)
 			if tc.expectError {
-				assert.Panics(t, func() { aip11.BitsToBytes(tc.bits) }, "BitsToBytes should panic")
+				assert.Error(t, err, "BitsToBytes should return an error")
 			} else {
-				assert.Equal(t, tc.expected, aip11.BitsToBytes(tc.bits), "BitsToBytes result should match expected")
+				assert.NoError(t, err, "BitsToBytes should not return an error")
+				assert.Equal(t, tc.expected, result, "BitsToBytes result should match expected")
 			}
 		})
 	}
@@ -403,7 +417,9 @@ func TestLookupIndex(t *testing.T) {
 
 	for i, tc := range testCases {
 		t.Run(fmt.Sprintf("case %d", i), func(t *testing.T) {
-			assert.Equal(t, tc.index, aip11.LookupIndex(tc.word, wordlists.English), "LookupIndex result should match expected")
+			result, err := aip11.LookupIndex(tc.word, wordlists.English)
+			assert.NoError(t, err, "LookupIndex should not return an error")
+			assert.Equal(t, tc.index, result, "LookupIndex result should match expected")
 		})
 	}
 }
@@ -419,7 +435,9 @@ func TestIntToBinary11(t *testing.T) {
 	}
 	for i, tc := range testCases {
 		t.Run(fmt.Sprintf("case %d", i), func(t *testing.T) {
-			assert.Equal(t, tc.expected, aip11.IntToBinary11(tc.input), "IntToBinary11 result should match expected")
+			result, err := aip11.IntToBinary11(tc.input)
+			assert.NoError(t, err, "IntToBinary11 should not return an error")
+			assert.Equal(t, tc.expected, result, "IntToBinary11 result should match expected")
 		})
 	}
 }
@@ -435,7 +453,9 @@ func TestBinaryToInt11(t *testing.T) {
 	}
 	for i, tc := range testCases {
 		t.Run(fmt.Sprintf("case %d", i), func(t *testing.T) {
-			assert.Equal(t, tc.expected, aip11.BinaryToInt11(tc.input), "BinaryToInt11 result should match expected")
+			result, err := aip11.BinaryToInt11(tc.input)
+			assert.NoError(t, err, "BinaryToInt11 should not return an error")
+			assert.Equal(t, tc.expected, result, "BinaryToInt11 result should match expected")
 		})
 	}
 }
