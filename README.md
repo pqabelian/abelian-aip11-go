@@ -1,6 +1,6 @@
 # Abelian AIP11 Go
 
-This is a Go implementation of the AIP11 specification.
+This is a Go implementation of the [AIP11 specification](./aip0011_v001.pdf).
 
 ## Documentation and Examples
 
