@@ -141,12 +141,14 @@ func MasterSeedToAccountRootSeeds(masterSeed []byte) ([][]byte, error) {
 	coinSnKeyRootSeed := PRF(masterSeed, []byte("CoinSerialNumberKeyRootSeed"))
 	coinDetectorRootKey := PRF(masterSeed, []byte("CoinDetectorRootKey"))
 	coinVKRootSeed := PRF(masterSeed, []byte("CoinValueKeyRootSeed"))
+	coinVKeyRootSeedAut := PRF(masterSeed, []byte("CoinValueKeyRootSeedAut"))
 
 	return [][]byte{
 		coinSpKeyRootSeed,
 		coinSnKeyRootSeed,
 		coinDetectorRootKey,
 		coinVKRootSeed,
+		coinVKeyRootSeedAut,
 	}, nil
 }
 
